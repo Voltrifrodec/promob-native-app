@@ -1,6 +1,7 @@
 package sk.umb.fpv.promob.pokornymath
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,6 +10,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import sk.umb.fpv.promob.pokornymath.database.FeedReaderDbHelper
+import sk.umb.fpv.promob.pokornymath.database.FeedReaderDbHelper.Companion.initializeSQLScript
 import sk.umb.fpv.promob.pokornymath.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +26,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+
+        Log.i("TEST_TAG", FeedReaderDbHelper.isDatabaseInitialized(this).toString())
+
+        // Inicializovanie databazy
+        if (!FeedReaderDbHelper.isDatabaseInitialized(this)) {
+
+            FeedReaderDbHelper.initializeSQL(this)
+            // Bruh, ako idiot to musim pisat do MainActivity (blbe raw resources)
+            Log.i("TEST_TAG", "Uhh.. hello?")
+            initializeSQLScript(this, R.raw.insert_example_exam)
+            initializeSQLScript(this, R.raw.insert_example_questions)
+        }
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -56,4 +71,5 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
+
 }
