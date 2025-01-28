@@ -1,5 +1,6 @@
 package sk.umb.fpv.promob.pokornymath
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -27,17 +28,23 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        Log.i("TEST_TAG", FeedReaderDbHelper.isDatabaseInitialized(this).toString())
-
         // Inicializovanie databazy
+        Log.i("TEST_TAG", "Je databaza inicializovana? " + FeedReaderDbHelper.isDatabaseInitialized(this).toString())
         if (!FeedReaderDbHelper.isDatabaseInitialized(this)) {
+            Log.i("TEST_TAG", "Inicializujem databazu...")
+            FeedReaderDbHelper.initializeSQL(this)
+            initializeSQLScript(this, R.raw.insert_example_exam)
+            Log.i("TEST_TAG", "Databaza inicializovana")
+        }
+
+        /*if (!FeedReaderDbHelper.isDatabaseInitialized(this)) {
 
             FeedReaderDbHelper.initializeSQL(this)
             // Bruh, ako idiot to musim pisat do MainActivity (blbe raw resources)
             Log.i("TEST_TAG", "Uhh.. hello?")
             initializeSQLScript(this, R.raw.insert_example_exam)
             initializeSQLScript(this, R.raw.insert_example_questions)
-        }
+        }*/
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)

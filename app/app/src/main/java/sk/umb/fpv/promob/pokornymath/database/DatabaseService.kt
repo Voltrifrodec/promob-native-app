@@ -30,7 +30,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         // Vytvorenie tabuliek
         private const val SQL_CREATE_EXAMS =
             "CREATE TABLE IF NOT EXISTS ${FeedExams.TABLE_NAME} (" +
-                    "${BaseColumns._ID} TEXT PRIMARY KEY," +
+                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${FeedExams.COLUMN_NAME_TITLE} TEXT," +
                     "${FeedExams.COLUMN_NAME_QUESTIONS} TEXT," +
                     "${FeedExams.COLUMN_NAME_FINISHED} INTEGER" +
@@ -38,7 +38,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
         private const val SQL_CREATE_COMPLETED_EXAMS =
             "CREATE TABLE IF NOT EXISTS ${FeedCompletedExams.TABLE_NAME} (" +
-                    "${BaseColumns._ID} TEXT PRIMARY KEY," +
+                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${FeedCompletedExams.COLUMN_NAME_EXAM_ID} TEXT," +
                     "${FeedCompletedExams.COLUMN_NAME_SCORE} INTEGER," +
                     "${FeedCompletedExams.COLUMN_NAME_FINISHED_AT} INTEGER" +
@@ -46,7 +46,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
         private const val SQL_CREATE_QUESTIONS =
             "CREATE TABLE IF NOT EXISTS ${FeedQuestions.TABLE_NAME} (" +
-                    "${BaseColumns._ID} TEXT PRIMARY KEY," +
+                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${FeedQuestions.COLUMN_NAME_TYPE} INTEGER," +
                     "${FeedQuestions.COLUMN_NAME_QUESTION} TEXT," +
                     "${FeedQuestions.COLUMN_NAME_ASSETS} TEXT," +
@@ -71,7 +71,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
             // Ziskanie stavu o inicializacii databazy z Preferences
             val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            val isDatabaseInitialized = sharedPreferences.getBoolean(PREF_DB_INITIALIZED, false)
+            val isDatabaseInitialized = sharedPreferences.getBoolean(PREF_DB_INITIALIZED, false)    // Druhy parameter je co to ma vratit ak Pref neexistuje!
 
             // Ak databaza uz bola inicializovana, tak rovno ukoncime inicializaciu
             if (isDatabaseInitialized) {
@@ -80,10 +80,8 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
             }
 
             // Ak neexistuje, tak neexistuju ani tabulky v nej -- vytvorenie premennej pre pracu s db a vytvorenie tabuliek
-
             val dbHelper = FeedReaderDbHelper(context)
             val db = dbHelper.writableDatabase
-
 
             try {
                 db.execSQL(SQL_CREATE_EXAMS)
@@ -105,10 +103,10 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
         fun initializeSQLScript(context: Context, file: Int) {
             // Kontrola  stavu o inicializacii databazy z Preferences -- ak neexistuje, tak nic nevytvaraj
-            /* if (isDatabaseInitialized(context)) {
+            if (!isDatabaseInitialized(context)) {
                 Log.e("DatabaseScriptInsertion", "Failed to run script: database is not initialized properly!")
                 return
-            } */
+            }
 
             val db = FeedReaderDbHelper(context).writableDatabase
 
@@ -118,9 +116,22 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
                 val fileReader = BufferedReader(InputStreamReader(inputStream))
                 val commandBuilder = StringBuilder()
 
-                fileReader.forEachLine { line -> commandBuilder.append(line).append("\n") }
-
-                db.execSQL(commandBuilder.toString())
+                // Oprava chyby: db.execSQL nepodporuje viacero prikazov naraz (zastavi sa po ;)... oprava:
+                fileReader.forEachLine { line ->
+                    Log.i("DEBUG_FILE_READER", "Line: $line\t commandBuilder: $commandBuilder")
+                    val trimmedLine = line.trim()
+                    // Odignorujeme prazdne riadky a komentare, pre zrychlenie
+                    if (trimmedLine.isNotEmpty() && !trimmedLine.startsWith("--")) {
+                        commandBuilder.append(trimmedLine).append(" ")
+                        // Ak narazime na bodkociarku, tak zavolame execSQL a spustime prikazy, ktory sme zatial precitali
+                        if (trimmedLine.endsWith(";")) {
+                            val sql = commandBuilder.toString()
+                            Log.i("DEBUG_FILE_READER", "Found ; -> executing script: \n$sql")
+                            db.execSQL(sql)
+                            commandBuilder.clear() // Restartovanie premennej pre dalsi prikaz
+                        }
+                    }
+                }
 
                 Log.i("DatabaseScriptInsertion", "Script finished successfully.")
 
@@ -134,7 +145,7 @@ class FeedReaderDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
         // Funkcia pre kontrolu inicializacie databazy
         fun isDatabaseInitialized(context: Context) : Boolean {
-            return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getBoolean(PREF_DB_INITIALIZED, false)
+            return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getBoolean(PREF_DB_INITIALIZED, false) // ak je PREF_DB_INITIALIZED == false => false == true => false
         }
     }
 
