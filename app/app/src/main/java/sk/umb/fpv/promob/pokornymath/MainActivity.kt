@@ -11,14 +11,16 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
-import sk.umb.fpv.promob.pokornymath.database.FeedReaderDbHelper
-import sk.umb.fpv.promob.pokornymath.database.FeedReaderDbHelper.Companion.initializeSQLScript
+import sk.umb.fpv.promob.pokornymath.database.DatabaseService
+import sk.umb.fpv.promob.pokornymath.database.ExamEntity
 import sk.umb.fpv.promob.pokornymath.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    private val databaseService = DatabaseService(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,23 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        // Inicializovanie databazy
-        Log.i("TEST_TAG", "Je databaza inicializovana? " + FeedReaderDbHelper.isDatabaseInitialized(this).toString())
-        if (!FeedReaderDbHelper.isDatabaseInitialized(this)) {
+        Log.i("TEST_TAG", "Je databaza inicializovana? " + databaseService.isDatabaseInitialized(this).toString())
+        if (!databaseService.isDatabaseInitialized(this)) {
             Log.i("TEST_TAG", "Inicializujem databazu...")
-            FeedReaderDbHelper.initializeSQL(this)
-            initializeSQLScript(this, R.raw.insert_example_exam)
+            databaseService.initializeSQL()
+            databaseService.getAllExams()
+            databaseService.getAllQuestions()
+            databaseService.getAllCompletedExams()
             Log.i("TEST_TAG", "Databaza inicializovana")
         }
-
-        /*if (!FeedReaderDbHelper.isDatabaseInitialized(this)) {
-
-            FeedReaderDbHelper.initializeSQL(this)
-            // Bruh, ako idiot to musim pisat do MainActivity (blbe raw resources)
-            Log.i("TEST_TAG", "Uhh.. hello?")
-            initializeSQLScript(this, R.raw.insert_example_exam)
-            initializeSQLScript(this, R.raw.insert_example_questions)
-        }*/
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
