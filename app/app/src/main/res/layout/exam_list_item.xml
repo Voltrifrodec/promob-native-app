@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <CheckBox
+        android:id="@+id/finished"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:clickable="false"
+
+        android:gravity="end"
+        android:paddingBottom="0pt"
+        android:textSize="32sp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="100pt"
+        android:layout_height="match_parent"
+        android:gravity="left|center_vertical"
+        android:text="@string/defaultExamText"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/questionsCount"
+        android:layout_width="28dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/startQuizButton"
+        android:layout_width="40pt"
+        android:layout_height="match_parent"
+        android:layout_marginStart="0pt"
+        android:backgroundTint="#FF0000"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/startText"
+        app:cornerRadius="@null"
+        app:iconPadding="8dp"
+        tools:textSize="10sp" />
+
+
+</LinearLayout>

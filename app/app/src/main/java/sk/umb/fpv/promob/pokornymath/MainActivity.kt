@@ -1,6 +1,7 @@
 package sk.umb.fpv.promob.pokornymath
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -11,6 +12,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import sk.umb.fpv.promob.pokornymath.database.DatabaseService
 import sk.umb.fpv.promob.pokornymath.database.ExamEntity
 import sk.umb.fpv.promob.pokornymath.databinding.ActivityMainBinding
@@ -23,13 +28,12 @@ class MainActivity : AppCompatActivity() {
     private val databaseService = DatabaseService(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.fragment_menu)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
-
+        // Kontrola inicializacie databazy po spusteni aplikacie
         Log.i("TEST_TAG", "Je databaza inicializovana? " + databaseService.isDatabaseInitialized(this).toString())
         if (!databaseService.isDatabaseInitialized(this)) {
             Log.i("TEST_TAG", "Inicializujem databazu...")
@@ -40,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             Log.i("TEST_TAG", "Databaza inicializovana")
         }
 
+        /*
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -49,6 +54,16 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null)
                 .setAnchorView(R.id.fab).show()
         }
+        */
+
+        val examsListMenuButton = findViewById<Button>(R.id.button_quizes)
+        examsListMenuButton.setOnClickListener {
+            val intent = Intent(this, ExamListActivity::class.java)
+            startActivity(intent)
+        }
+        val exitButton = findViewById<Button>(R.id.button_exit) // Nenastavujem, pretoze nie to odporucane vypinat takto aplikaciu -- nechat to na app lifecycle
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

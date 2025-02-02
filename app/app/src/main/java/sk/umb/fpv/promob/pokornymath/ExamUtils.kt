@@ -1,0 +1,35 @@
+package sk.umb.fpv.promob.pokornymath
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.TextView
+import sk.umb.fpv.promob.pokornymath.database.ExamEntity
+
+class ExamUtils(context: Context, values: List<ExamEntity>) : ArrayAdapter<ExamEntity>(context, 0, values) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        var viewObject = convertView
+        if (viewObject == null) {
+            viewObject = LayoutInflater.from(context).inflate(R.layout.exam_list_item, parent, false)
+        }
+
+        val exam = getItem(position)
+
+        val examFinsihed = viewObject!!.findViewById<CheckBox>(R.id.finished)
+        examFinsihed.isChecked = exam!!.isFinished
+
+        val examName = viewObject!!.findViewById<TextView>(R.id.name)
+        examName.text = exam!!.title
+
+        val examQuestionsCount = viewObject!!.findViewById<TextView>(R.id.questionsCount)
+        examQuestionsCount.text = String.format(exam!!.questions.size.toString())
+
+
+        return viewObject
+    }
+
+}

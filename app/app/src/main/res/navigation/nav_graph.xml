@@ -3,19 +3,67 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/ExamListActivity">
+
+    <activity
+        android:id="@+id/ExamListActivity"
+        android:name="sk.umb.fpv.promob.pokornymath.ExamListActivity"
+        android:label="Exams list"
+        tools:layout="@layout/activity_exam_list">
+    </activity>
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="sk.umb.fpv.promob.pokornymath.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/MenuFragment"
+        android:name="sk.umb.fpv.promob.pokornymath.MenuFragment"
+        android:label="@string/menu_fragment_label"
+        tools:layout="@layout/fragment_menu">
+
+        <action
+            android:id="@+id/action_MenuFragment_to_ExamListFragment"
+            app:destination="@id/ExamListActivity" />
+    </fragment>
+    <!--
+    <fragment
+        android:id="@+id/ExamsFragment"
+        android:name="sk.umb.fpv.promob.pokornymath.ExamsFragment"
+        android:label="@string/exams_fragment_label"
+        tools:layout="@layout/fragment_exams">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/MenuFragment" />
+    </fragment> -->
+<!--
+    <activity
+        android:id="@+id/ExamListFragment"
+        android:name="sk.umb.fpv.promob.pokornymath.ExamListActivity"
+        android:label="Test List" >
+        <action
+            android:id="@+id/action_ExamListFragment_to_QuestionFragment"
+            app:destination="@id/QuestionFragment" />
+        <action
+            android:id="@+id/action_ExamListFragment_to_MenuFragment"
+            app:destination="@id/MenuFragment" />
+    </activity>
+
+    <fragment
+        android:id="@+id/QuestionFragment"
+        android:name="sk.umb.fpv.promob.pokornymath.QuestionFragment"
+        android:label="Question" >
+        <action
+            android:id="@+id/action_QuestionFragment_to_ResultsFragment"
+            app:destination="@id/resultsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultsFragment"
+        android:name="sk.umb.fpv.promob.pokornymath.ResultsFragment"
+        android:label="Results" />-->
+    <!--<fragment
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/SecondFragment"
         android:name="sk.umb.fpv.promob.pokornymath.SecondFragment"
         android:label="@string/second_fragment_label"
@@ -24,5 +72,5 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
-    </fragment>
+    </fragment>-->
 </navigation>

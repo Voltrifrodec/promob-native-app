@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        tools:context=".MenuFragment">
+
+        <Button
+            android:id="@+id/button_quizes"
+            android:layout_width="100pt"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="328dp"
+            android:backgroundTint="@color/paletteColorPrimary"
+            android:text="@string/testy"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_exit"
+            android:layout_width="100pt"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="420dp"
+            android:backgroundTint="#FF0000"
+            android:text="@string/leaveText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/red" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="284dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="668dp"
+            android:text="@string/copyright"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="276dp"
+            android:layout_height="74dp"
+            android:layout_marginBottom="14dp"
+            android:fontFamily="sans-serif-black"
+            android:text="@string/title"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="34sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.876"
+            tools:text="@string/title" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="196dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="48dp"
+            android:text="@string/subtitle"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/button_quizes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
