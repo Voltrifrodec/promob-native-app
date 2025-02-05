@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="darkGray">#565656</color>
 
     <color name="paletteColorPrimary">#00AFF0</color>
 </resources>

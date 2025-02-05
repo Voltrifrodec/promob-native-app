@@ -237,7 +237,7 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     fun getQuestionById(questionId: Int): QuestionEntity? {
         val db = this.readableDatabase
-        val query = "SELECT * FROM ${FeedQuestions.TABLE_NAME} WHERE ${BaseColumns._ID} = $questionId"
+        val query = "SELECT * FROM ${FeedQuestions.TABLE_NAME} WHERE ${BaseColumns._ID} = ?"
         val cursor = db.rawQuery(query, arrayOf(questionId.toString()))
 
         return if (cursor.moveToNext()) {
@@ -246,6 +246,7 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             val assets = cursor.getString(cursor.getColumnIndexOrThrow(FeedQuestions.COLUMN_NAME_ASSETS))
             val options = cursor.getString(cursor.getColumnIndexOrThrow(FeedQuestions.COLUMN_NAME_OPTIONS)).split(",")
             val correctAnswer = cursor.getInt(cursor.getColumnIndexOrThrow(FeedQuestions.COLUMN_NAME_CORRECT)).toInt()
+            Log.i("TEST_TAG", "Found question information: $questionId\t$type\t$question\t$assets\t$options\t$correctAnswer")
 
             QuestionEntity(questionId, type, question, assets, options, correctAnswer)
         } else {

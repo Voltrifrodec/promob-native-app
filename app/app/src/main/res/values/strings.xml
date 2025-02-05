@@ -12,6 +12,7 @@
     <string name="defaultExamText">Text testu</string>
     <string name="defaultExamTitleText">Názov testu</string>
     <string name="closeExamText"><u>Ukončiť test</u></string>
+    <string name="defaultQuestionText">Text otázky</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

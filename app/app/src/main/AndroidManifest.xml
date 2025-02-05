@@ -13,6 +13,9 @@
         android:theme="@style/Theme.PokornyMath"
         tools:targetApi="31">
         <activity
+            android:name=".ExamCompletedView"
+            android:exported="false" />
+        <activity
             android:name=".ExamViewActivity"
             android:exported="false"
             android:theme="@style/Theme.PokornyMath" />
