@@ -1,10 +1,12 @@
 package sk.umb.fpv.promob.pokornymath
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import sk.umb.fpv.promob.pokornymath.database.ExamEntity
@@ -27,6 +29,17 @@ class ExamUtils(context: Context, values: List<ExamEntity>) : ArrayAdapter<ExamE
 
         val examQuestionsCount = viewObject!!.findViewById<TextView>(R.id.questionsCount)
         examQuestionsCount.text = String.format(exam!!.questions.size.toString())
+
+        // Pridelenie akcie pre jednotlivy test v zozname
+        // ID testu sa ulozi do seriazable (?)
+        // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
+        val startButton = viewObject.findViewById<Button>(R.id.startQuizButton)
+        startButton.setOnClickListener {
+            val intent = Intent(context, ExamViewActivity::class.java).apply {
+                putExtra("exam_id", exam.id)
+            }
+            context.startActivity(intent)
+        }
 
 
         return viewObject

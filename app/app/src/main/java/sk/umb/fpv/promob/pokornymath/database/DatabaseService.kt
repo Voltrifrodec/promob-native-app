@@ -180,7 +180,7 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     fun getExamById(examId: Int): ExamEntity? {
         val db = this.readableDatabase
-        val query = "SELECT * FROM ${FeedExams.TABLE_NAME} WHERE ${BaseColumns._ID} = $examId"
+        val query = "SELECT * FROM ${FeedExams.TABLE_NAME} WHERE ${BaseColumns._ID} = ?"
         val cursor = db.rawQuery(query, arrayOf(examId.toString()))
 
         return if (cursor.moveToNext()) {
@@ -191,7 +191,7 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             ExamEntity(examId, title, questions, isFinished)
         } else {
             Log.e("QUERY_ERR", "Could not retrieve exam with ID=$examId")
-            null
+            null // return null = 'null' ?
         }.also {
             cursor.close()
         }
