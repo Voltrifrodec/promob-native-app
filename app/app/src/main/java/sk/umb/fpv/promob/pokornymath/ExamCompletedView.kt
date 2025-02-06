@@ -1,6 +1,7 @@
 package sk.umb.fpv.promob.pokornymath
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,5 +17,16 @@ class ExamCompletedView : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // Ziskanie ID testu, vysledkov a pouzivatelovych moznosti
+        val examId = intent.getIntExtra("exam_id", -1)
+        val score = intent.getStringExtra("score")
+        val answers = intent.getStringArrayExtra("answers")
+
+        Log.i("TEST_TAG", "Exam ID: $examId")
+        Log.i("TEST_TAG", "Score: $score")
+        Log.i("TEST_TAG", "Answers: ${answers?.size.toString()}")
+
+
     }
 }

@@ -19,17 +19,23 @@ import org.w3c.dom.Text
 import sk.umb.fpv.promob.pokornymath.database.DatabaseService
 import sk.umb.fpv.promob.pokornymath.database.ExamEntity
 import sk.umb.fpv.promob.pokornymath.database.QuestionEntity
+import kotlin.reflect.typeOf
 
 class ExamViewActivity : AppCompatActivity() {
 
+    private var examId: Int = -1
     private val databaseService = DatabaseService(this)
     private var currentQuestionIndex: Int = 0
     private var currentScore: Int = 0
     private var questionsAmount: Int = 0
+    private var answers : HashMap<Int, String> = HashMap<Int, String> ()
+    // private var answers: MutableList<String?> = mutableListOf() // Super vec: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-list/
+    private lateinit var selectedAnswer: String
 
     private lateinit var questionTextView: TextView
     private lateinit var optionsContainer: LinearLayout
     private lateinit var questions: List<QuestionEntity>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +47,7 @@ class ExamViewActivity : AppCompatActivity() {
             insets
         }
 
-        val examId = intent.getIntExtra("exam_id", -1)
+        this.examId = intent.getIntExtra("exam_id", -1)
         if (examId != -1) {
             Log.i("TEST_TAG", "Loaded exam with ID $examId")
             // Nacitanie testu podla ID. Ak neexistuje, tak znovu nacitaj zoznam testov.
@@ -73,19 +79,6 @@ class ExamViewActivity : AppCompatActivity() {
         }
 
 
-        // Tlacidla pre predchadzajucu/nasledujucu otazku
-        var previousQuestionButton = findViewById<Button>(R.id.prevQuestionButton).setOnClickListener {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--
-                loadQuestion(currentQuestionIndex)
-            }
-        }
-        var nextQuestionButton = findViewById<Button>(R.id.nextQuestionButton).setOnClickListener {
-            if (currentQuestionIndex < questions.size - 1) {
-                currentQuestionIndex++
-                loadQuestion(currentQuestionIndex)
-            }
-        }
 
 
     }
@@ -115,7 +108,7 @@ class ExamViewActivity : AppCompatActivity() {
     private fun loadQuestion(questionIndex: Int) {
 
         // 0. Premenna pre ukladanie pouzivatelovej odpovede
-        val answer: String? = null
+        var selectedAnswer: String? = null
 
         // 1. Vycistenie predoslych objektov
         this.optionsContainer.removeAllViews()
@@ -129,14 +122,6 @@ class ExamViewActivity : AppCompatActivity() {
         }
         else {
             findViewById<Button>(R.id.prevQuestionButton).visibility = View.INVISIBLE
-        }
-        // 2.2 Ak sa nachadzame na poslednej otazke, tak zmenime text a funkciu pre tlacidlo 'Dalsie'
-        if (questionIndex == questions.size - 1) {
-            val button = findViewById<Button>(R.id.nextQuestionButton)
-            button.text = "Dokončiť"
-            button.setOnClickListener {
-                finishExam()
-            }
         }
 
         // 3. Vytvorenie novych objektov podla typu otazky (1 - a/b/c, 2 - True/False, 3 - Input)
@@ -158,6 +143,10 @@ class ExamViewActivity : AppCompatActivity() {
                         id = index
                         setTextColor(resources.getColor(R.color.white, null))
                     }
+                    radioButton.setOnClickListener {
+                        this.selectedAnswer = option
+                        saveAnswer(currentQuestionIndex, index.toString())
+                    }
                     radioGroup.addView(radioButton)
                 }
                 optionsContainer.addView(radioGroup)
@@ -173,8 +162,8 @@ class ExamViewActivity : AppCompatActivity() {
                 val submitButton = Button(this).apply {
                     text = "Potvrdiť"
                     setOnClickListener {
-                        val answer = editText.text.toString()
-                        Toast.makeText(context, "Answer: $answer", Toast.LENGTH_SHORT).show()
+                        selectedAnswer = text.toString()
+                        saveAnswer(currentQuestionIndex, selectedAnswer)
                     }
                 }
                 optionsContainer.addView(editText)
@@ -182,12 +171,79 @@ class ExamViewActivity : AppCompatActivity() {
             }
         }
 
+        // Tlacidla pre predchadzajucu/nasledujucu otazku
+        var previousQuestionButton = findViewById<Button>(R.id.prevQuestionButton).setOnClickListener {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--
+                loadQuestion(currentQuestionIndex)
+            }
+        }
+        val nextQuestionButton = findViewById<Button>(R.id.nextQuestionButton)
+        nextQuestionButton.setOnClickListener {
+            if (currentQuestionIndex < questions.size - 1) {
+                currentQuestionIndex++
+                loadQuestion(currentQuestionIndex)
+                saveAnswer(currentQuestionIndex, selectedAnswer)
+            }
+        }
+        // Ak sa nachadzame na poslednej otazke, tak zmenime text a funkciu pre tlacidlo 'Dalsie'
+        if (currentQuestionIndex == questions.size - 1) {
+            nextQuestionButton.text = "Dokončiť"
+            nextQuestionButton.setOnClickListener {
+                finishExam()
+            }
+        }
 
     }
 
     private fun finishExam() {
-        val intent = Intent(this, ExamCompletedView::class.java)
+        val intent = Intent(this, ExamCompletedView::class.java).apply {
+            putExtra("exam_id", examId)
+            putExtra("score", currentScore.toString())
+            putExtra("answers", answers.values.toString())
+        }
+        Log.i("TEST_TAG", "Values in answers: ${answers.values}")
         this.startActivity(intent)
     }
+
+    private fun saveAnswer(index: Int, value: String?) {
+        if(value == null) {
+            return
+        }
+        Log.i("TEST_TAG", "Saving value=$value on for question number $index")
+        answers[index] = value
+        Log.i("TEST_TAG", "Saved value=${answers[index]}")
+    }
+
+
+    /*private fun validateAnswer(index: Int, answer: String?) {
+
+
+        if (option == null) {
+            return
+        }
+
+        val correctAnswer = questions[question].correctAnswer
+        val selectedOption: Int
+        when (option) {
+            "True" -> {
+                selectedOption = 1
+            }
+            "False" -> {
+                selectedOption = 0
+            }
+            else -> {
+                selectedOption = option.toIntOrNull() ?: -1
+            }
+
+        }
+        Log.i("TEST_TAG", "Validating: $selectedOption and ${correctAnswer}")
+
+        if (selectedOption == correctAnswer) {
+            this.currentScore++;
+        }
+        this.answers.add(option)
+
+    }*/
 
 }
