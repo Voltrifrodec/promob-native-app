@@ -21,11 +21,11 @@ class ExamCompletedView : AppCompatActivity() {
         // Ziskanie ID testu, vysledkov a pouzivatelovych moznosti
         val examId = intent.getIntExtra("exam_id", -1)
         val score = intent.getStringExtra("score")
-        val answers = intent.getStringArrayExtra("answers")
+        val answers = intent.getStringExtra("answers")
 
         Log.i("TEST_TAG", "Exam ID: $examId")
         Log.i("TEST_TAG", "Score: $score")
-        Log.i("TEST_TAG", "Answers: ${answers?.size.toString()}")
+        Log.i("TEST_TAG", "Answers: ${answers.toString()}")
 
 
     }

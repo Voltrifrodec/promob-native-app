@@ -197,6 +197,11 @@ class ExamViewActivity : AppCompatActivity() {
     }
 
     private fun finishExam() {
+
+        // Vypocet skore podla zvolenych moznosti
+        // Lepsie nez to pocitat pocas testu -- takto sa to vypocita naraz
+        calculateScore()
+
         val intent = Intent(this, ExamCompletedView::class.java).apply {
             putExtra("exam_id", examId)
             putExtra("score", currentScore.toString())
@@ -213,6 +218,17 @@ class ExamViewActivity : AppCompatActivity() {
         Log.i("TEST_TAG", "Saving value=$value on for question number $index")
         answers[index] = value
         Log.i("TEST_TAG", "Saved value=${answers[index]}")
+    }
+
+    private fun calculateScore() {
+
+        questions.map { question ->
+            val index = questions.indexOf(question)
+            if (answers[index] != null && answers[index]?.toInt() == question.correctAnswer) {
+                currentScore++;
+            }
+        }
+
     }
 
 
