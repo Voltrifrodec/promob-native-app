@@ -4,5 +4,5 @@ data class ExamEntity(
     val id: Int,
     val title: String,
     val questions: List<Int>,
-    val isFinished: Boolean
+    var isFinished: Boolean
 )

@@ -16,9 +16,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import org.w3c.dom.Text
+import sk.umb.fpv.promob.pokornymath.database.CompletedExamEntity
 import sk.umb.fpv.promob.pokornymath.database.DatabaseService
 import sk.umb.fpv.promob.pokornymath.database.ExamEntity
 import sk.umb.fpv.promob.pokornymath.database.QuestionEntity
+import java.util.Date
 import kotlin.reflect.typeOf
 
 class ExamViewActivity : AppCompatActivity() {
@@ -35,6 +37,7 @@ class ExamViewActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
     private lateinit var optionsContainer: LinearLayout
     private lateinit var questions: List<QuestionEntity>
+    private var examEntity: ExamEntity? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,18 +54,18 @@ class ExamViewActivity : AppCompatActivity() {
         if (examId != -1) {
             Log.i("TEST_TAG", "Loaded exam with ID $examId")
             // Nacitanie testu podla ID. Ak neexistuje, tak znovu nacitaj zoznam testov.
-            val exam: ExamEntity? = databaseService.getExamById(examId)
-            if (exam == null) {
+            this.examEntity = databaseService.getExamById(examId)
+            if (this.examEntity == null) {
                 val intent = Intent(this, ExamListActivity::class.java)
                 this.startActivity(intent)
                 return
             }
 
             val examTitle = findViewById<TextView>(R.id.examTitle)
-            examTitle.text = exam.title
+            examTitle.text = this.examEntity!!.title
 
             // Nacitanie otazok, textoveho objekta pre otazku a kontajnera, do ktoreho budeme vkladat moznosti
-            this.questions = loadQuestionsByIdList(exam.questions)
+            this.questions = loadQuestionsByIdList(this.examEntity!!.questions)
             this.questionsAmount = this.questions.size
             this.optionsContainer = findViewById<LinearLayout>(R.id.optionsContainer)
             this.questionTextView = findViewById<TextView>(R.id.questionText)
@@ -202,11 +205,22 @@ class ExamViewActivity : AppCompatActivity() {
         // Lepsie nez to pocitat pocas testu -- takto sa to vypocita naraz
         calculateScore()
 
-        val intent = Intent(this, ExamCompletedView::class.java).apply {
+        val intent = Intent(this, ExamListActivity::class.java).apply {
             putExtra("exam_id", examId)
             putExtra("score", currentScore.toString())
             putExtra("answers", answers.values.toString())
         }
+
+        var completedExam = ExamEntity(examId, examEntity!!.title, examEntity!!.questions, false)
+        if (currentScore == questions.size) {
+            completedExam.isFinished = true
+        }
+        databaseService.updateExam(completedExam)
+
+        val finishTime = Date().time
+        val completedExamRequest = CompletedExamEntity(0, currentScore, examId, finishTime.toString())
+        databaseService.saveCompletedExam(completedExamRequest)
+
         Log.i("TEST_TAG", "Values in answers: ${answers.values}")
         this.startActivity(intent)
     }

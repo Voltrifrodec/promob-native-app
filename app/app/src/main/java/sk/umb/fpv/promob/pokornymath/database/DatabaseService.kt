@@ -1,5 +1,6 @@
 package sk.umb.fpv.promob.pokornymath.database
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
@@ -196,6 +197,50 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             cursor.close()
         }
     }
+
+    fun updateExam(examRequest: ExamEntity): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(FeedExams.COLUMN_NAME_TITLE, examRequest.title)
+            put(FeedExams.COLUMN_NAME_QUESTIONS, examRequest.questions.joinToString(",")) // Store list as CSV
+            put(FeedExams.COLUMN_NAME_FINISHED, if (examRequest.isFinished) 1 else 0)
+        }
+
+        val rowsAffected = db.update(
+            FeedExams.TABLE_NAME,
+            values,
+            "${BaseColumns._ID} = ?",
+            arrayOf(examRequest.id.toString())
+        )
+
+        return if (rowsAffected > 0) {
+            true
+        } else {
+            Log.e("UPDATE_ERR", "Could not update exam with ID=${examRequest.id}")
+            false
+        }
+    }
+
+
+    fun saveCompletedExam(completedExamEntityRequest: CompletedExamEntity): Long {
+
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(FeedCompletedExams.COLUMN_NAME_EXAM_ID, completedExamEntityRequest.examId)
+            put(FeedCompletedExams.COLUMN_NAME_SCORE, completedExamEntityRequest.score) // Store list as CSV
+            put(FeedCompletedExams.COLUMN_NAME_FINISHED_AT, completedExamEntityRequest.finishedAt)
+        }
+
+        val id = db.insert(FeedCompletedExams.TABLE_NAME, null, values)
+
+        return if (id != -1L) {
+            id // Vrati ID novej ulozenej entity
+        } else {
+            Log.e("TEST_TAG", "Could not insert new exam!")
+            -1L
+        }
+    }
+
 
     fun getAllQuestions(): List<QuestionEntity> {
         val db = this.readableDatabase
