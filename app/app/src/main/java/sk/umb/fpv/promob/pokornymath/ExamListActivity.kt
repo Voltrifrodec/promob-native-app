@@ -1,25 +1,18 @@
 package sk.umb.fpv.promob.pokornymath
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ListView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import org.w3c.dom.Text
 import sk.umb.fpv.promob.pokornymath.database.DatabaseService
-import sk.umb.fpv.promob.pokornymath.database.ExamEntity
+import sk.umb.fpv.promob.pokornymath.database.ExamUtils
 
 class ExamListActivity : AppCompatActivity() {
-
     private val databaseService = DatabaseService(this)
 
+    // Vytvorenie zoznamu testov z databazy
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -37,10 +30,6 @@ class ExamListActivity : AppCompatActivity() {
         if (exams.isNotEmpty()) {
             val adapter = ExamUtils(this, exams)
             examListView.adapter = adapter
-
-
         }
-
-
     }
 }

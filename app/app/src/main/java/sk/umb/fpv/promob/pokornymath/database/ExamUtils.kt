@@ -1,4 +1,4 @@
-package sk.umb.fpv.promob.pokornymath
+package sk.umb.fpv.promob.pokornymath.database
 
 import android.content.Context
 import android.content.Intent
@@ -9,7 +9,9 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
-import sk.umb.fpv.promob.pokornymath.database.ExamEntity
+import sk.umb.fpv.promob.pokornymath.ExamViewActivity
+import sk.umb.fpv.promob.pokornymath.R
+import sk.umb.fpv.promob.pokornymath.entities.ExamEntity
 
 class ExamUtils(context: Context, values: List<ExamEntity>) : ArrayAdapter<ExamEntity>(context, 0, values) {
 

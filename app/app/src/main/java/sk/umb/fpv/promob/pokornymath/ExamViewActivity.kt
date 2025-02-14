@@ -10,36 +10,33 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import org.w3c.dom.Text
-import sk.umb.fpv.promob.pokornymath.database.CompletedExamEntity
+import sk.umb.fpv.promob.pokornymath.entities.CompletedExamEntity
 import sk.umb.fpv.promob.pokornymath.database.DatabaseService
-import sk.umb.fpv.promob.pokornymath.database.ExamEntity
-import sk.umb.fpv.promob.pokornymath.database.QuestionEntity
+import sk.umb.fpv.promob.pokornymath.entities.ExamEntity
+import sk.umb.fpv.promob.pokornymath.entities.QuestionEntity
 import java.util.Date
-import kotlin.reflect.typeOf
 
+// Trieda obsahujuca hlavnu logiku zobrazovania a generovania testov
 class ExamViewActivity : AppCompatActivity() {
-
+    // Premenne a konstanty pre nastavenie testov
     private var examId: Int = -1
     private val databaseService = DatabaseService(this)
     private var currentQuestionIndex: Int = 0
     private var currentScore: Int = 0
     private var questionsAmount: Int = 0
+    // Super vec: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-list/
     private var answers : HashMap<Int, String> = HashMap<Int, String> ()
-    // private var answers: MutableList<String?> = mutableListOf() // Super vec: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-list/
     private lateinit var selectedAnswer: String
-
     private lateinit var questionTextView: TextView
     private lateinit var optionsContainer: LinearLayout
     private lateinit var questions: List<QuestionEntity>
     private var examEntity: ExamEntity? = null
 
-
+    // Po nacitani aktivity nacitam test podla ulozeneho ID a jeho otazky
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -50,6 +47,7 @@ class ExamViewActivity : AppCompatActivity() {
             insets
         }
 
+        // Ziskanie testu z databazy
         this.examId = intent.getIntExtra("exam_id", -1)
         if (examId != -1) {
             Log.i("TEST_TAG", "Loaded exam with ID $examId")
@@ -61,6 +59,7 @@ class ExamViewActivity : AppCompatActivity() {
                 return
             }
 
+            // Nastavenie nazvu testu
             val examTitle = findViewById<TextView>(R.id.examTitle)
             examTitle.text = this.examEntity!!.title
 
@@ -80,15 +79,10 @@ class ExamViewActivity : AppCompatActivity() {
             val intent = Intent(this, ExamListActivity::class.java)
             this.startActivity(intent)
         }
-
-
-
-
     }
 
     // Ziskanie otazok z databazy podla zoznamu s ID otazok
     private fun loadQuestionsByIdList(questionsIdList: List<Int>) : List<QuestionEntity> {
-
         // Prejdeme zoznam s ID a nacitame otazky do premennej
         val questions = questionsIdList.mapNotNull { questionId ->
             Log.i("TEST_TAG", "Looking for question with ID=$questionId...")
@@ -96,8 +90,8 @@ class ExamViewActivity : AppCompatActivity() {
             Log.i("TEST_TAG", "Found it.")
             question
         }
-        Log.i("TEST_TAG", "questions found: $questions from $questionsIdList")
 
+        Log.i("TEST_TAG", "questions found: $questions from $questionsIdList")
         return questions
     }
 
@@ -109,7 +103,6 @@ class ExamViewActivity : AppCompatActivity() {
     //  4. Ak pouzivatel zvolil moznost/zadal hodnotu, odblokuj tlacidlo (update indexu, znovu sa
     //     zavola loadQuestion()).
     private fun loadQuestion(questionIndex: Int) {
-
         // 0. Premenna pre ukladanie pouzivatelovej odpovede
         var selectedAnswer: String? = null
 
@@ -154,7 +147,6 @@ class ExamViewActivity : AppCompatActivity() {
                 }
                 optionsContainer.addView(radioGroup)
             }
-
             // Moznost 3: Vlastny vstup
             3 -> { // Input-based question
                 val editText = EditText(this).apply {
@@ -196,11 +188,10 @@ class ExamViewActivity : AppCompatActivity() {
                 finishExam()
             }
         }
-
     }
 
+    // Ukoncenie testu -- vypocitame skore, ulozime udaje a prepneme aktivitu
     private fun finishExam() {
-
         // Vypocet skore podla zvolenych moznosti
         // Lepsie nez to pocitat pocas testu -- takto sa to vypocita naraz
         calculateScore()
@@ -211,20 +202,24 @@ class ExamViewActivity : AppCompatActivity() {
             putExtra("answers", answers.values.toString())
         }
 
+        // Aktualizovanie dokonceneho testu ak sme ho spravili na 100%
         var completedExam = ExamEntity(examId, examEntity!!.title, examEntity!!.questions, false)
         if (currentScore == questions.size) {
             completedExam.isFinished = true
         }
         databaseService.updateExam(completedExam)
 
+        // Ulozenie zaznamu o rieseni testu
         val finishTime = Date().time
         val completedExamRequest = CompletedExamEntity(0, currentScore, examId, finishTime.toString())
         databaseService.saveCompletedExam(completedExamRequest)
 
+        // Prepnutie aktivity
         Log.i("TEST_TAG", "Values in answers: ${answers.values}")
         this.startActivity(intent)
     }
 
+    // Ulozenie moznosti
     private fun saveAnswer(index: Int, value: String?) {
         if(value == null) {
             return
@@ -234,46 +229,13 @@ class ExamViewActivity : AppCompatActivity() {
         Log.i("TEST_TAG", "Saved value=${answers[index]}")
     }
 
+    // Vypocet skore
     private fun calculateScore() {
-
         questions.map { question ->
             val index = questions.indexOf(question)
             if (answers[index] != null && answers[index]?.toInt() == question.correctAnswer) {
                 currentScore++;
             }
         }
-
     }
-
-
-    /*private fun validateAnswer(index: Int, answer: String?) {
-
-
-        if (option == null) {
-            return
-        }
-
-        val correctAnswer = questions[question].correctAnswer
-        val selectedOption: Int
-        when (option) {
-            "True" -> {
-                selectedOption = 1
-            }
-            "False" -> {
-                selectedOption = 0
-            }
-            else -> {
-                selectedOption = option.toIntOrNull() ?: -1
-            }
-
-        }
-        Log.i("TEST_TAG", "Validating: $selectedOption and ${correctAnswer}")
-
-        if (selectedOption == correctAnswer) {
-            this.currentScore++;
-        }
-        this.answers.add(option)
-
-    }*/
-
 }

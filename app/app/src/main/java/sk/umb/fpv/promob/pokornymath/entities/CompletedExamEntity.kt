@@ -1,4 +1,4 @@
-package sk.umb.fpv.promob.pokornymath.database
+package sk.umb.fpv.promob.pokornymath.entities
 
 data class CompletedExamEntity(
     val id: Int,

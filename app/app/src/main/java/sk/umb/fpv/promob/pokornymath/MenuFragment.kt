@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import sk.umb.fpv.promob.pokornymath.databinding.FragmentMenuBinding
 
+// Tu sa nemeni nic, iba pridava funkcionalita pre menu
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class MenuFragment : Fragment() {
-
     private var _binding: FragmentMenuBinding? = null
 
     // This property is only valid between onCreateView and
@@ -23,23 +23,17 @@ class MenuFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
+    // Funkcionalita menu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonQuizes.setOnClickListener {
             findNavController().navigate(R.id.action_MenuFragment_to_ExamListFragment)
         }
-
-        // Nie je odporúčané!
-        /*binding.buttonExit.setOnClickListener {
-
-        }*/
     }
 
     override fun onDestroyView() {

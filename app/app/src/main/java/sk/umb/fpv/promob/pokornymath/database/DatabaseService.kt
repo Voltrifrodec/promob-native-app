@@ -13,8 +13,10 @@ import sk.umb.fpv.promob.pokornymath.R
 import sk.umb.fpv.promob.pokornymath.database.FeedReaderContract.FeedExams
 import sk.umb.fpv.promob.pokornymath.database.FeedReaderContract.FeedCompletedExams
 import sk.umb.fpv.promob.pokornymath.database.FeedReaderContract.FeedQuestions
+import sk.umb.fpv.promob.pokornymath.entities.CompletedExamEntity
+import sk.umb.fpv.promob.pokornymath.entities.ExamEntity
+import sk.umb.fpv.promob.pokornymath.entities.QuestionEntity
 import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.InputStreamReader
 
 // https://developer.android.com/training/data-storage/sqlite

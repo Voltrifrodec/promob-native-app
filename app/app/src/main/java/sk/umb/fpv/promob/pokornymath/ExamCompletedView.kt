@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
+// Nedokoncene (nefungoval mi progress bar)
 class ExamCompletedView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +27,5 @@ class ExamCompletedView : AppCompatActivity() {
         Log.i("TEST_TAG", "Exam ID: $examId")
         Log.i("TEST_TAG", "Score: $score")
         Log.i("TEST_TAG", "Answers: ${answers.toString()}")
-
-
     }
 }
